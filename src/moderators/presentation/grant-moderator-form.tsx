@@ -22,7 +22,7 @@ export function GrantModeratorForm() {
           maxLength={40}
           placeholder="@usuario"
           autoComplete="off"
-          className="min-w-0 flex-1 rounded-full border border-ink-700 bg-ink-950 px-4 py-2 text-sm placeholder:text-ink-500 focus:border-ink-400 focus:outline-none"
+          className="min-w-0 flex-1 rounded-full border border-ink-700 bg-ink-950 px-4 py-2 text-sm placeholder:text-ink-500 focus:border-ink-400"
         />
         <button type="submit" disabled={pending} className={buttonClasses("primary")}>
           {pending ? "Añadiendo…" : "Añadir"}

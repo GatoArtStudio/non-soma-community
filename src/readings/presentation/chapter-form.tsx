@@ -21,7 +21,7 @@ export function ChapterForm({ currentChapter }: { currentChapter: string | null 
           defaultValue={currentChapter ?? ""}
           maxLength={120}
           placeholder="Ej. Capítulo 7: La peste del insomnio"
-          className="min-w-0 flex-1 rounded-full border border-ink-700 bg-ink-950 px-4 py-2 text-sm placeholder:text-ink-500 focus:border-ink-400 focus:outline-none"
+          className="min-w-0 flex-1 rounded-full border border-ink-700 bg-ink-950 px-4 py-2 text-sm placeholder:text-ink-500 focus:border-ink-400"
         />
         <button type="submit" disabled={pending} className={buttonClasses("secondary")}>
           {pending ? "Guardando…" : "Guardar"}

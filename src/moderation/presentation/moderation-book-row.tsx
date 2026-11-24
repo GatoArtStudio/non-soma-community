@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Book } from "@/books/domain/book";
+import { ExternalLink } from "@/shared/ui/external-link";
 import { BookCover } from "@/books/presentation/book-cover";
 import { BookStatusLabel } from "@/books/presentation/book-status-label";
 import { formatAuthors, formatDate } from "@/books/presentation/format";
@@ -32,14 +33,12 @@ export function ModerationBookRow({ book, actions }: { book: Book; actions: Reac
             {formatDate(book.createdAt)}
             {" · "}
             {book.likesCount} me gusta ·{" "}
-            <a
+            <ExternalLink
               href={`https://openlibrary.org/works/${book.openLibraryWorkKey}`}
-              target="_blank"
-              rel="noopener noreferrer"
               className="underline-offset-4 hover:underline"
             >
               Open Library
-            </a>
+            </ExternalLink>
           </p>
         </div>
       </div>

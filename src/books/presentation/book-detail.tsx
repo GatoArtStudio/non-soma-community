@@ -5,6 +5,7 @@ import { findLikedBookIds } from "@/book-likes/presentation/liked-books";
 import { LikeButton } from "@/book-likes/presentation/like-button";
 import { getBrowseBooks } from "@/books/container";
 import { getPublicConfig } from "@/shared/config/public-config";
+import { ExternalLink } from "@/shared/ui/external-link";
 import { BookCover } from "./book-cover";
 import { BookStatusLabel } from "./book-status-label";
 import { formatAuthors, formatDate } from "./format";
@@ -63,14 +64,12 @@ export async function BookDetail({ params }: { params: Promise<{ id: string }> }
         />
         <p className="text-sm text-ink-500">
           Ficha bibliográfica en{" "}
-          <a
+          <ExternalLink
             href={`https://openlibrary.org/works/${book.openLibraryWorkKey}`}
-            target="_blank"
-            rel="noopener noreferrer"
             className="text-ink-300 underline-offset-4 hover:underline"
           >
             Open Library
-          </a>
+          </ExternalLink>
           .{" "}
           <Link href="/libros" className="text-ink-300 underline-offset-4 hover:underline">
             Volver a los libros

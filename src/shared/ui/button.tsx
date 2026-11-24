@@ -12,8 +12,9 @@ const variantClasses: Record<ButtonVariant, string> = {
 
 export function buttonClasses(variant: ButtonVariant = "primary", className?: string): string {
   return cn(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium",
-    "transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+    "inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium pointer-coarse:min-h-11",
+    "transition-[color,background-color,border-color,scale] duration-150 ease-(--ease-out)",
+    "active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
     variantClasses[variant],
     className,
   );

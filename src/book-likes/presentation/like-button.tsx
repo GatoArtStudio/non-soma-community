@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useInvisibleTurnstile } from "@/bot-protection/presentation/use-invisible-turnstile";
 import { cn } from "@/shared/ui/cn";
+import { HeartIcon } from "@/shared/ui/icons";
 import { toggleLikeAction } from "./like.actions";
 
 interface LikeButtonProps {
@@ -55,10 +56,11 @@ export function LikeButton({
         onClick={toggle}
         disabled={pending}
         aria-pressed={liked}
-        aria-label={liked ? `Quitar me gusta a ${bookTitle}` : `Me gusta ${bookTitle}`}
+        aria-label={`Me gusta: ${bookTitle}, ${count} ${count === 1 ? "voto" : "votos"}`}
         className={cn(
-          "group inline-flex items-center gap-1.5 rounded-full border transition-colors",
-          size === "lg" ? "px-4 py-2 text-base" : "px-3 py-1 text-sm",
+          "inline-flex items-center gap-1.5 rounded-full border pointer-coarse:min-h-11",
+          "transition-[color,background-color,border-color,scale] duration-150 ease-(--ease-out) active:scale-[0.95]",
+          size === "lg" ? "min-h-10 px-4 text-base" : "min-h-8 px-3 text-sm",
           liked
             ? "border-paper bg-paper text-ink-950"
             : "border-ink-600 text-ink-200 hover:border-ink-300 hover:text-paper",
@@ -75,19 +77,5 @@ export function LikeButton({
         </p>
       )}
     </div>
-  );
-}
-
-function HeartIcon({ filled, className }: { filled: boolean; className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
-      <path
-        d="M12 20.5s-7.5-4.6-9.3-9.4C1.4 7.6 3.6 4 7.2 4c2 0 3.6 1.1 4.8 2.8C13.2 5.1 14.8 4 16.8 4c3.6 0 5.8 3.6 4.5 7.1-1.8 4.8-9.3 9.4-9.3 9.4Z"
-        fill={filled ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }

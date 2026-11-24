@@ -19,10 +19,10 @@ export function BookStatusLabel({ status, className }: { status: BookStatus; cla
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
         status === "reading" && "bg-paper text-ink-950",
-        status === "read" && "border border-ink-500 text-ink-200",
-        status === "approved" && "border border-ink-700 text-ink-300",
-        status === "pending" && "border border-dashed border-ink-500 text-ink-300",
-        status === "rejected" && "border border-danger/40 text-danger",
+        status === "read" && "border border-ink-500 bg-ink-950 text-ink-200",
+        status === "approved" && "border border-ink-700 bg-ink-950 text-ink-300",
+        status === "pending" && "border border-dashed border-ink-500 bg-ink-950 text-ink-300",
+        status === "rejected" && "border border-danger/40 bg-ink-950 text-danger",
         className,
       )}
     >

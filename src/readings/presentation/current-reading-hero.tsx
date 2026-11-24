@@ -6,6 +6,8 @@ import { BookCover } from "@/books/presentation/book-cover";
 import { formatAuthors, formatDate } from "@/books/presentation/format";
 import { getPublicConfig } from "@/shared/config/public-config";
 import { buttonClasses } from "@/shared/ui/button";
+import { ExternalLink } from "@/shared/ui/external-link";
+import { KickIcon } from "@/shared/ui/icons";
 import { getManageReading } from "@/readings/container";
 
 export async function CurrentReadingHero() {
@@ -15,9 +17,8 @@ export async function CurrentReadingHero() {
 
   if (!reading) {
     return (
-      <section className="rounded-3xl border border-ink-800 bg-ink-900 px-6 py-12 sm:px-10">
-        <p className="text-xs uppercase tracking-[0.25em] text-ink-500">Leyendo ahora</p>
-        <h1 className="mt-4 max-w-2xl font-serif text-4xl leading-tight sm:text-5xl">
+      <section className="rounded-2xl border border-ink-800 bg-ink-900 px-6 py-12 sm:px-10">
+        <h1 className="max-w-2xl text-balance font-serif text-4xl leading-tight tracking-[-0.02em] sm:text-5xl">
           Estamos eligiendo el próximo libro.
         </h1>
         <p className="mt-4 max-w-xl text-ink-300">
@@ -28,14 +29,10 @@ export async function CurrentReadingHero() {
           <Link href="/proponer" className={buttonClasses("primary")}>
             Proponer un libro
           </Link>
-          <a
-            href={channelUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonClasses("secondary")}
-          >
+          <ExternalLink href={channelUrl} showIcon={false} className={buttonClasses("secondary")}>
+            <KickIcon className="size-4" />
             Ver el canal en Kick
-          </a>
+          </ExternalLink>
         </div>
       </section>
     );
@@ -45,7 +42,7 @@ export async function CurrentReadingHero() {
   const liked = (await findLikedBookIds(await getViewer(), [book.id])).has(book.id);
 
   return (
-    <section className="grid gap-8 rounded-3xl border border-ink-800 bg-ink-900 p-6 sm:grid-cols-[220px_1fr] sm:p-10">
+    <section className="grid gap-8 rounded-2xl border border-ink-800 bg-ink-900 p-6 sm:grid-cols-[220px_1fr] sm:p-10">
       <BookCover
         coverId={book.coverId}
         title={book.title}
@@ -54,19 +51,19 @@ export async function CurrentReadingHero() {
         className="mx-auto w-44 sm:w-full"
       />
       <div className="flex flex-col justify-center">
-        <p className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-ink-400">
-          <span
-            className="size-2 rounded-full bg-paper motion-safe:animate-pulse"
-            aria-hidden="true"
-          />
-          Leyendo ahora en el stream
-        </p>
-        <h1 className="mt-4 font-serif text-4xl leading-tight sm:text-5xl">
-          <Link href={`/libros/${book.id}`} className="hover:underline">
+        <h1 className="text-balance font-serif text-4xl leading-tight tracking-[-0.02em] sm:text-5xl">
+          <Link href={`/libros/${book.id}`} className="underline-offset-[6px] hover:underline">
             {book.title}
           </Link>
         </h1>
         <p className="mt-2 text-lg text-ink-300">{formatAuthors(book.authors)}</p>
+        <p className="mt-4 flex items-center gap-2 text-sm text-ink-300">
+          <span
+            className="size-2 shrink-0 rounded-full bg-paper motion-safe:animate-pulse"
+            aria-hidden="true"
+          />
+          Es la lectura actual del stream
+        </p>
         <dl className="mt-6 grid max-w-md grid-cols-2 gap-4 text-sm">
           <div>
             <dt className="text-ink-500">Vamos por</dt>
@@ -78,14 +75,10 @@ export async function CurrentReadingHero() {
           </div>
         </dl>
         <div className="mt-8 flex flex-wrap items-start gap-3">
-          <a
-            href={channelUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonClasses("primary")}
-          >
+          <ExternalLink href={channelUrl} showIcon={false} className={buttonClasses("primary")}>
+            <KickIcon className="size-4" />
             Ver en Kick
-          </a>
+          </ExternalLink>
           <LikeButton
             bookId={book.id}
             bookTitle={book.title}
@@ -101,5 +94,5 @@ export async function CurrentReadingHero() {
 }
 
 export function CurrentReadingHeroSkeleton() {
-  return <div aria-hidden="true" className="h-80 animate-pulse rounded-3xl bg-ink-900" />;
+  return <div aria-hidden="true" className="h-80 animate-pulse rounded-2xl bg-ink-900" />;
 }

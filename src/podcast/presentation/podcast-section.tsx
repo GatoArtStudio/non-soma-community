@@ -1,10 +1,12 @@
 import { podcastChannels } from "@/podcast/podcast-channels";
+import { ExternalLink } from "@/shared/ui/external-link";
+import { SpotifyIcon, YouTubeIcon } from "@/shared/ui/icons";
 
 export function PodcastSection() {
   return (
     <section aria-labelledby="podcast-heading" className="flex flex-col gap-8">
       <div>
-        <h2 id="podcast-heading" className="font-serif text-3xl">
+        <h2 id="podcast-heading" className="font-serif text-3xl tracking-[-0.02em]">
           Mira y escucha Non Soma
         </h2>
         <p className="mt-1 text-ink-400">
@@ -13,16 +15,17 @@ export function PodcastSection() {
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <article className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-sm font-medium uppercase tracking-widest text-ink-400">YouTube</h3>
-            <a
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="flex items-center gap-2 text-base font-medium text-paper">
+              <YouTubeIcon className="size-5 text-ink-200" />
+              YouTube
+            </h3>
+            <ExternalLink
               href={podcastChannels.youtube.url}
-              target="_blank"
-              rel="noopener noreferrer"
               className="text-sm text-ink-300 underline-offset-4 hover:text-paper hover:underline"
             >
               Abrir la playlist
-            </a>
+            </ExternalLink>
           </div>
           <div className="aspect-video overflow-hidden rounded-2xl bg-ink-900 ring-1 ring-ink-800 lg:aspect-auto lg:h-[352px]">
             <iframe
@@ -37,16 +40,17 @@ export function PodcastSection() {
           </div>
         </article>
         <article className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-sm font-medium uppercase tracking-widest text-ink-400">Spotify</h3>
-            <a
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="flex items-center gap-2 text-base font-medium text-paper">
+              <SpotifyIcon className="size-5 text-ink-200" />
+              Spotify
+            </h3>
+            <ExternalLink
               href={podcastChannels.spotify.url}
-              target="_blank"
-              rel="noopener noreferrer"
               className="text-sm text-ink-300 underline-offset-4 hover:text-paper hover:underline"
             >
               Abrir el podcast
-            </a>
+            </ExternalLink>
           </div>
           {/* Spotify's full player layout (with the episode list) needs exactly 352px of height. */}
           <div className="h-[352px] overflow-hidden rounded-2xl bg-ink-900 ring-1 ring-ink-800">
