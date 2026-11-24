@@ -16,8 +16,8 @@ export interface WebhookSignatureVerifier {
 }
 
 export interface ProcessedMessageStore {
-  /** Returns false when the message id was already processed. */
-  markProcessed(messageId: string): Promise<boolean>;
+  wasProcessed(messageId: string): Promise<boolean>;
+  markProcessed(messageId: string): Promise<void>;
 }
 
 export interface KickEventSubscriptions {
@@ -27,5 +27,8 @@ export interface KickEventSubscriptions {
 
 export const CHAT_MESSAGE_EVENT = { name: "chat.message.sent", version: 1 } as const;
 
-/** Deliveries older than this are rejected to limit replay of captured requests. */
-export const MAX_DELIVERY_AGE_MS = 10 * 60 * 1000;
+/**
+ * Deliveries older than this are rejected to limit replay of captured requests. It leaves room
+ * for Kick's retries, and message ids are deduplicated for longer than this window.
+ */
+export const MAX_DELIVERY_AGE_MS = 60 * 60 * 1000;

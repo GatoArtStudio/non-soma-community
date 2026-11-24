@@ -21,6 +21,15 @@ export async function POST(request: NextRequest) {
         eventVersion: header("kick-event-version"),
       },
     });
+    console.info(
+      "[kick-webhook]",
+      JSON.stringify({
+        event: header("kick-event-type"),
+        version: header("kick-event-version"),
+        messageId: header("kick-event-message-id"),
+        ...outcome,
+      }),
+    );
     if (outcome.status === "rejected") {
       return NextResponse.json(
         { error: outcome.reason },
