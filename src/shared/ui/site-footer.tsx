@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { podcastChannels } from "@/podcast/podcast-channels";
 
 export function SiteFooter() {
   return (
@@ -16,6 +17,25 @@ export function SiteFooter() {
               El Muñe
             </a>
             .
+          </p>
+          <p>
+            <a
+              href={podcastChannels.youtube.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink-300 underline-offset-4 hover:underline"
+            >
+              YouTube
+            </a>
+            {" · "}
+            <a
+              href={podcastChannels.spotify.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink-300 underline-offset-4 hover:underline"
+            >
+              Spotify
+            </a>
           </p>
           <p>Proyecto comunitario de código abierto · Licencia MIT</p>
         </div>

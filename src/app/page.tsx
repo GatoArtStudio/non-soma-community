@@ -7,6 +7,7 @@ import {
   CurrentReadingHeroSkeleton,
 } from "@/readings/presentation/current-reading-hero";
 import { LoginErrorNotice } from "@/authentication/presentation/login-error-notice";
+import { PodcastSection } from "@/podcast/presentation/podcast-section";
 
 export default function HomePage({ searchParams }: PageProps<"/">) {
   return (
@@ -35,6 +36,8 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
           <TopRecommendations />
         </Suspense>
       </section>
+
+      <PodcastSection />
     </div>
   );
 }
