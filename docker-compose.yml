@@ -54,9 +54,6 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
-    ports:
-      # Bound to localhost: the server's Cloudflare Tunnel exposes it publicly.
-      - "127.0.0.1:${APP_PORT:-3000}:3000"
     healthcheck:
       test:
         [
@@ -68,7 +65,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    networks: [internal, public]
+    networks: [internal, public, dokploy-network]
 
 volumes:
   db-data:
@@ -77,3 +74,5 @@ networks:
   internal:
     internal: true
   public:
+  dokploy-network:
+    external: true

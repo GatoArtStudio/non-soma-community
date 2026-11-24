@@ -137,10 +137,11 @@ The stack has these services:
 
 - **`db`**: MySQL with a persistent volume, only on an internal network.
 - **`migrate`**: applies Drizzle migrations, then exits.
-- **`app`**: the Next.js standalone server, bound to `127.0.0.1:${APP_PORT:-3000}`.
+- **`app`**: the Next.js standalone server, listening on port `3000` inside the Docker network.
+  No port is published on the host.
 
-The compose file does not run Cloudflare itself. The server's existing Cloudflare Tunnel should
-route the public hostname to `http://localhost:${APP_PORT:-3000}`.
+The compose file does not run Cloudflare itself. The server's existing Cloudflare Tunnel reaches
+the app through the Docker network.
 
 ### Cloudflare recommendations
 
