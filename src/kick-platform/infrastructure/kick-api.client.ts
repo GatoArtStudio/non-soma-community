@@ -30,6 +30,16 @@ const subscriptionSchema = z.object({
   method: z.string().optional(),
 });
 
+const subscribeResponseSchema = z.object({
+  data: z.array(
+    z.object({
+      name: z.string().nullish(),
+      subscription_id: z.string().nullish(),
+      error: z.string().nullish(),
+    }),
+  ),
+});
+
 export type KickChannel = z.infer<typeof channelSchema>;
 export type KickUser = z.infer<typeof userSchema>;
 export type KickEventSubscription = z.infer<typeof subscriptionSchema>;
@@ -90,14 +100,21 @@ export class KickApiClient {
     return z.object({ data: z.array(subscriptionSchema) }).parse(body).data;
   }
 
+  /** Kick answers 200 even when an event is refused, reporting it per event in `data[].error`. */
   async subscribeToEvents(
     broadcasterUserId: number,
     events: { name: string; version: number }[],
   ): Promise<void> {
-    await this.appRequest("/events/subscriptions", {
+    const body = await this.appRequest("/events/subscriptions", {
       method: "POST",
       json: { broadcaster_user_id: broadcasterUserId, events, method: "webhook" },
     });
+    const parsed = subscribeResponseSchema.safeParse(body);
+    const refused = parsed.success ? parsed.data.data.filter((outcome) => outcome.error) : [];
+    if (refused.length > 0) {
+      const details = refused.map((outcome) => `${outcome.name}: ${outcome.error}`).join("; ");
+      throw new KickApiError(`Kick refused the event subscription (${details})`, 422);
+    }
   }
 
   private async appRequest(path: string, init: { method?: string; json?: unknown } = {}) {
