@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { CookieBanner } from "@/cookie-consent/presentation/cookie-banner";
 import { SiteFooter } from "@/shared/ui/site-footer";
 import { SiteHeader } from "@/shared/ui/site-header";
 import "./globals.css";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        <CookieBanner />
       </body>
     </html>
   );

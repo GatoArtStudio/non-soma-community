@@ -4,9 +4,13 @@ import { refresh } from "next/cache";
 import { errorState } from "@/shared/errors/error-messages";
 import type { ActionState } from "@/shared/ui/action-state";
 import { getActor } from "@/authentication/presentation/viewer";
-import { getRequestFingerprint } from "@/bot-protection/presentation/request-fingerprint";
+import {
+  getClientIp,
+  getOrCreateVisitorHash,
+} from "@/bot-protection/presentation/request-fingerprint";
 import { TURNSTILE_FIELD } from "@/bot-protection/presentation/turnstile-field";
 import { getProposeBook } from "@/books/container";
+import { requireCookieConsent } from "@/cookie-consent/presentation/consent-server";
 import { bookStatusLabel } from "./book-status-label";
 
 const HONEYPOT_FIELD = "website";
@@ -21,14 +25,14 @@ export async function proposeBookAction(
   }
 
   try {
-    const fingerprint = await getRequestFingerprint();
+    await requireCookieConsent();
     const actor = await getActor();
     const result = await getProposeBook()({
       workKey: String(formData.get("workKey") ?? ""),
       verificationToken: String(formData.get(TURNSTILE_FIELD) ?? ""),
       proposer: actor ? { userId: actor.userId, role: actor.role } : null,
-      remoteIp: fingerprint.remoteIp,
-      networkHash: fingerprint.networkHash,
+      visitorHash: actor ? null : await getOrCreateVisitorHash(),
+      remoteIp: await getClientIp(),
     });
 
     switch (result.outcome) {

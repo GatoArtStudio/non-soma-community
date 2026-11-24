@@ -7,7 +7,7 @@ const baseInput = {
   workKey: "OL274505W",
   verificationToken: "token",
   remoteIp: "203.0.113.5",
-  networkHash: "net",
+  visitorHash: "device-1",
 };
 
 describe("proposeBook", () => {
@@ -68,7 +68,7 @@ describe("proposeBook", () => {
     expect(guard).not.toHaveBeenCalled();
   });
 
-  it("applies per-user limits to signed-in proposers and per-network limits otherwise", async () => {
+  it("applies per-user limits to signed-in proposers and per-device limits otherwise", async () => {
     const guard = vi.fn<GuardHumanAction>(allowAllGuard);
     const proposeBook = createProposeBook({
       books: new InMemoryBookRepository(),
@@ -80,7 +80,7 @@ describe("proposeBook", () => {
     await proposeBook({ ...baseInput, proposer: null }).catch(() => null);
 
     expect(guard.mock.calls[0]?.[0].rateLimits[0]?.key).toBe("propose:user:9");
-    expect(guard.mock.calls[1]?.[0].rateLimits[0]?.key).toBe("propose:net:net");
+    expect(guard.mock.calls[1]?.[0].rateLimits[0]?.key).toBe("propose:visitor:device-1");
   });
 
   it("fails when the catalog does not know the work", async () => {
@@ -93,5 +93,19 @@ describe("proposeBook", () => {
     await expect(proposeBook({ ...baseInput, proposer: null })).rejects.toMatchObject({
       code: "book_not_found_in_catalog",
     });
+  });
+
+  it("requires the device cookie for anonymous proposals", async () => {
+    const guard = vi.fn<GuardHumanAction>(allowAllGuard);
+    const proposeBook = createProposeBook({
+      books: new InMemoryBookRepository(),
+      catalog: new FakeCatalog(),
+      guardHumanAction: guard,
+    });
+
+    await expect(
+      proposeBook({ ...baseInput, visitorHash: null, proposer: null }),
+    ).rejects.toMatchObject({ code: "cookie_consent_required" });
+    expect(guard).not.toHaveBeenCalled();
   });
 });

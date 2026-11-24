@@ -6,6 +6,8 @@ import {
   TurnstileWidget,
   type TurnstileWidgetHandle,
 } from "@/bot-protection/presentation/turnstile-widget";
+import { ConsentRequiredNotice } from "@/cookie-consent/presentation/consent-required-notice";
+import { useCookieConsent } from "@/cookie-consent/presentation/use-cookie-consent";
 import { idleActionState, type ActionState } from "@/shared/ui/action-state";
 import { buttonClasses } from "@/shared/ui/button";
 import { cn } from "@/shared/ui/cn";
@@ -27,6 +29,7 @@ export function ProposeBookForm({ turnstileSiteKey }: { turnstileSiteKey: string
   const [selected, setSelected] = useState<CatalogEntry | null>(null);
   const [verified, setVerified] = useState(false);
   const turnstileRef = useRef<TurnstileWidgetHandle>(null);
+  const consent = useCookieConsent();
   const [state, formAction, pending] = useActionState(
     async (previous: ActionState, formData: FormData) => {
       const result = await proposeBookAction(previous, formData);
@@ -123,16 +126,20 @@ export function ProposeBookForm({ turnstileSiteKey }: { turnstileSiteKey: string
               <input type="text" name="website" tabIndex={-1} autoComplete="off" />
             </label>
           </div>
-          <TurnstileWidget
-            ref={turnstileRef}
-            siteKey={turnstileSiteKey}
-            action="propose_book"
-            onTokenChange={(token) => setVerified(Boolean(token))}
-          />
+          {consent === "accepted" ? (
+            <TurnstileWidget
+              ref={turnstileRef}
+              siteKey={turnstileSiteKey}
+              action="propose_book"
+              onTokenChange={(token) => setVerified(Boolean(token))}
+            />
+          ) : (
+            <ConsentRequiredNotice action="proponer libros" />
+          )}
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="submit"
-              disabled={pending || !verified}
+              disabled={pending || !verified || consent !== "accepted"}
               className={buttonClasses("primary")}
             >
               {pending ? "Enviando…" : "Enviar propuesta"}

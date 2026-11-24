@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useInvisibleTurnstile } from "@/bot-protection/presentation/use-invisible-turnstile";
+import { saveConsent, useCookieConsent } from "@/cookie-consent/presentation/use-cookie-consent";
 import { cn } from "@/shared/ui/cn";
 import { HeartIcon } from "@/shared/ui/icons";
 import { toggleLikeAction } from "./like.actions";
@@ -26,8 +27,24 @@ export function LikeButton({
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   const [error, setError] = useState<string | null>(null);
+  const [askingConsent, setAskingConsent] = useState(false);
+  const consent = useCookieConsent();
   const [pending, startTransition] = useTransition();
   const { containerRef, getToken } = useInvisibleTurnstile(turnstileSiteKey, "like_book");
+
+  function handleClick() {
+    if (consent !== "accepted") {
+      setAskingConsent(true);
+      return;
+    }
+    toggle();
+  }
+
+  function acceptAndVote() {
+    saveConsent("accepted");
+    setAskingConsent(false);
+    toggle();
+  }
 
   function toggle() {
     setError(null);
@@ -53,7 +70,7 @@ export function LikeButton({
     <div className="flex flex-col items-start gap-1">
       <button
         type="button"
-        onClick={toggle}
+        onClick={handleClick}
         disabled={pending}
         aria-pressed={liked}
         aria-label={`Me gusta: ${bookTitle}, ${count} ${count === 1 ? "voto" : "votos"}`}
@@ -71,6 +88,21 @@ export function LikeButton({
         <span className="tabular-nums">{new Intl.NumberFormat("es-CO").format(count)}</span>
       </button>
       <div ref={containerRef} />
+      {askingConsent && consent !== "accepted" && (
+        <div
+          role="status"
+          className="flex max-w-56 flex-col items-start gap-1.5 text-xs text-ink-300"
+        >
+          <p>Para votar necesitas aceptar las cookies.</p>
+          <button
+            type="button"
+            onClick={acceptAndVote}
+            className="rounded-full border border-ink-600 px-3 py-1 text-ink-200 transition-colors duration-150 hover:border-ink-300 hover:text-paper pointer-coarse:min-h-11"
+          >
+            Aceptar y votar
+          </button>
+        </div>
+      )}
       {error && (
         <p role="alert" className="max-w-48 text-xs text-danger">
           {error}

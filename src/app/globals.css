@@ -71,3 +71,10 @@ body {
     scale: none !important;
   }
 }
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

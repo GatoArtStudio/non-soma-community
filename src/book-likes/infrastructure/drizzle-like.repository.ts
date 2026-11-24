@@ -3,7 +3,7 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 import { isDuplicateKeyError, type Database } from "@/shared/db/client";
 import { booksTable } from "@/books/infrastructure/books.table";
 import type { AddLikeOutcome, LikeRepository } from "@/book-likes/domain/like.repository";
-import { likerKey, networkKey, type Liker } from "@/book-likes/domain/liker";
+import { likerKey, type Liker } from "@/book-likes/domain/liker";
 import { bookLikesTable } from "./book-likes.table";
 
 export class DrizzleLikeRepository implements LikeRepository {
@@ -12,11 +12,7 @@ export class DrizzleLikeRepository implements LikeRepository {
   async add(bookId: number, liker: Liker): Promise<AddLikeOutcome> {
     try {
       await this.db.transaction(async (tx) => {
-        await tx.insert(bookLikesTable).values({
-          bookId,
-          likerKey: likerKey(liker),
-          networkKey: networkKey(liker),
-        });
+        await tx.insert(bookLikesTable).values({ bookId, likerKey: likerKey(liker) });
         await tx
           .update(booksTable)
           .set({ likesCount: sql`${booksTable.likesCount} + 1` })

@@ -3,6 +3,7 @@ import type { ActionState } from "@/shared/ui/action-state";
 
 /** User-facing (es-CO) messages for domain error codes. */
 const MESSAGES: Record<string, string> = {
+  cookie_consent_required: "Para votar y proponer libros necesitas aceptar las cookies.",
   rate_limited: "Hiciste demasiados intentos. Espera un rato y vuelve a intentarlo.",
   human_verification_failed:
     "No pudimos verificar que eres humano. Completa la verificación de nuevo.",

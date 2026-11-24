@@ -64,47 +64,59 @@ export function createHandleKickWebhook(deps: {
       return { status: "rejected", reason: "bad_signature" };
     }
 
+    const moderatorMessage = await readModeratorMessage(delivery);
+    if (moderatorMessage.status !== "moderator") return moderatorMessage.outcome;
+
+    // Only moderator messages reach the database; regular chat traffic is filtered in memory.
     if (await deps.processedMessages.wasProcessed(headers.messageId)) {
       return { status: "ignored", reason: "duplicate" };
     }
-
-    const outcome = await processEvent(delivery);
+    const moderator = await deps.grantModeratorFromChatBadge(moderatorMessage.sender);
     // Marked only after success, so Kick's retry of a failed delivery is processed again.
     await deps.processedMessages.markProcessed(headers.messageId);
-    return outcome;
+    return { status: "processed", moderator, senderUsername: moderatorMessage.sender.username };
   };
 
-  async function processEvent(delivery: KickWebhookDelivery): Promise<WebhookOutcome> {
+  async function readModeratorMessage(
+    delivery: KickWebhookDelivery,
+  ): Promise<
+    | { status: "moderator"; sender: { kickUserId: number; username: string } }
+    | { status: "skip"; outcome: WebhookOutcome }
+  > {
+    const skip = (outcome: WebhookOutcome) => ({ status: "skip" as const, outcome });
     if (delivery.headers.eventType !== CHAT_MESSAGE_EVENT.name) {
-      return { status: "ignored", reason: "unhandled_event" };
+      return skip({ status: "ignored", reason: "unhandled_event" });
     }
 
     let payload: unknown;
     try {
       payload = JSON.parse(delivery.rawBody);
     } catch {
-      return { status: "rejected", reason: "malformed" };
+      return skip({ status: "rejected", reason: "malformed" });
     }
     const parsed = chatMessageSchema.safeParse(payload);
-    if (!parsed.success) return { status: "rejected", reason: "malformed" };
+    if (!parsed.success) return skip({ status: "rejected", reason: "malformed" });
 
     const { broadcaster, sender } = parsed.data;
     if (broadcaster.user_id !== (await deps.channel.getBroadcasterUserId())) {
-      return { status: "ignored", reason: "other_channel", senderUsername: sender.username };
+      return skip({ status: "ignored", reason: "other_channel", senderUsername: sender.username });
     }
 
     const badges = (sender.identity?.badges ?? []).flatMap((badge) =>
       badge.type ? [badge.type.toLowerCase()] : [],
     );
     if (sender.is_anonymous || !badges.includes(MODERATOR_BADGE)) {
-      return { status: "ignored", reason: "no_badge", senderUsername: sender.username, badges };
+      return skip({
+        status: "ignored",
+        reason: "no_badge",
+        senderUsername: sender.username,
+        badges,
+      });
     }
 
-    const username = sender.username.slice(0, 64);
-    const moderator = await deps.grantModeratorFromChatBadge({
-      kickUserId: sender.user_id,
-      username,
-    });
-    return { status: "processed", moderator, senderUsername: username };
+    return {
+      status: "moderator",
+      sender: { kickUserId: sender.user_id, username: sender.username.slice(0, 64) },
+    };
   }
 }

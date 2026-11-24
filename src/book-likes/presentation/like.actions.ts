@@ -5,11 +5,12 @@ import { messageForError } from "@/shared/errors/error-messages";
 import { isDomainError } from "@/shared/errors/domain-error";
 import { getActor } from "@/authentication/presentation/viewer";
 import {
+  getClientIp,
   getOrCreateVisitorHash,
-  getRequestFingerprint,
 } from "@/bot-protection/presentation/request-fingerprint";
 import { getToggleLike } from "@/book-likes/container";
 import type { Liker } from "@/book-likes/domain/liker";
+import { requireCookieConsent } from "@/cookie-consent/presentation/consent-server";
 
 const toggleLikeSchema = z.object({
   bookId: z.number().int().positive(),
@@ -25,21 +26,16 @@ export async function toggleLikeAction(input: unknown): Promise<ToggleLikeAction
   if (!parsed.success) return { ok: false, message: messageForError(null) };
 
   try {
-    const fingerprint = await getRequestFingerprint();
+    await requireCookieConsent();
     const actor = await getActor();
     const liker: Liker = actor
       ? { kind: "user", userId: actor.userId }
-      : {
-          kind: "anonymous",
-          visitorHash: await getOrCreateVisitorHash(),
-          networkHash: fingerprint.networkHash,
-        };
+      : { kind: "anonymous", visitorHash: await getOrCreateVisitorHash() };
 
     const result = await getToggleLike().toggleLike({
       ...parsed.data,
       liker,
-      remoteIp: fingerprint.remoteIp,
-      networkHash: fingerprint.networkHash,
+      remoteIp: await getClientIp(),
     });
     return { ok: true, ...result };
   } catch (error) {

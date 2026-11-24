@@ -47,13 +47,17 @@ function chatMessage(badges: { type: string }[], broadcasterId = BROADCASTER_ID)
 
 function setup() {
   const processed = new Set<string>();
+  const databaseReads = vi.fn();
   const grant = vi.fn<(input: { kickUserId: number; username: string }) => Promise<"granted">>(
     async () => "granted",
   );
   const handle = createHandleKickWebhook({
     verifier: { verify: async (delivery) => verifyKickSignature(publicKey, delivery) },
     processedMessages: {
-      wasProcessed: async (id) => processed.has(id),
+      wasProcessed: async (id) => {
+        databaseReads(id);
+        return processed.has(id);
+      },
       markProcessed: async (id) => {
         processed.add(id);
       },
@@ -62,7 +66,7 @@ function setup() {
     grantModeratorFromChatBadge: grant,
     now: () => NOW,
   });
-  return { handle, grant };
+  return { handle, grant, databaseReads };
 }
 
 describe("handleKickWebhook", () => {
@@ -142,5 +146,16 @@ describe("handleKickWebhook", () => {
     });
 
     expect(await handle(delivery)).toMatchObject({ status: "processed" });
+  });
+
+  it("filters regular chat messages without touching the database", async () => {
+    const { handle, databaseReads } = setup();
+
+    const outcome = await handle(
+      signedDelivery(chatMessage([{ type: "subscriber" }]), { messageId: "7" }),
+    );
+
+    expect(outcome).toMatchObject({ reason: "no_badge" });
+    expect(databaseReads).not.toHaveBeenCalled();
   });
 });

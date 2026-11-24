@@ -42,7 +42,7 @@ It is the club's own space. It is tied to the Kick channel that hosts the readin
 
 ## Capabilities and Constraints
 
-- **Proposing and liking:** both work anonymously or with Kick login, and both always go through Cloudflare Turnstile and rate limits. Each Kick account gets one like per book. Anonymous visitors get one like per browser and network.
+- **Proposing and liking:** both work anonymously or with Kick login, and both always go through Cloudflare Turnstile and rate limits. Each Kick account gets one like per book. Anonymous visitors get one like per device, identified by a cookie. IPs are never used to identify people, because mobile carriers put many viewers behind one address. Voting and proposing require accepting cookies.
 - **Book lifecycle:** every proposal starts as pending. From there a book can be:
   - approved, which makes it a recommendation;
   - rejected, which keeps it so it cannot be proposed again;

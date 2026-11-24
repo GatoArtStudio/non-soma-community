@@ -1,7 +1,7 @@
 import "server-only";
 import { getEnv } from "@/shared/config/env";
 import { getDb } from "@/shared/db/client";
-import { getGuardHumanAction, getRateLimiter } from "@/bot-protection/container";
+import { getGuardHumanAction } from "@/bot-protection/container";
 import { createBrowseBooks } from "./application/browse-books";
 import { createProposeBook } from "./application/propose-book";
 import { createSearchCatalog } from "./application/search-catalog";
@@ -29,5 +29,5 @@ export function getProposeBook() {
 }
 
 export function getSearchCatalog() {
-  return createSearchCatalog({ catalog: getCatalog(), limiter: getRateLimiter() });
+  return createSearchCatalog({ catalog: getCatalog() });
 }
