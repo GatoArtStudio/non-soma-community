@@ -3,9 +3,10 @@ import type { RateLimitRule } from "./rate-limiter.port";
 const HOUR = 60 * 60;
 const DAY = 24 * HOUR;
 
+/** Action limits per Kick account or per device cookie. IPs are never used to identify people. */
 export const rateLimitPolicies = {
-  anonymousProposalsPerNetwork: (networkHash: string): RateLimitRule => ({
-    key: `propose:net:${networkHash}`,
+  anonymousProposals: (visitorHash: string): RateLimitRule => ({
+    key: `propose:visitor:${visitorHash}`,
     limit: 3,
     windowSeconds: DAY,
   }),
@@ -14,19 +15,9 @@ export const rateLimitPolicies = {
     limit: 10,
     windowSeconds: DAY,
   }),
-  likesPerNetwork: (networkHash: string): RateLimitRule => ({
-    key: `like:net:${networkHash}`,
-    limit: 30,
-    windowSeconds: HOUR,
-  }),
-  catalogSearchesPerNetwork: (networkHash: string): RateLimitRule => ({
-    key: `search:net:${networkHash}`,
+  likes: (likerKey: string): RateLimitRule => ({
+    key: `like:${likerKey}`,
     limit: 60,
-    windowSeconds: 60,
-  }),
-  loginAttemptsPerNetwork: (networkHash: string): RateLimitRule => ({
-    key: `login:net:${networkHash}`,
-    limit: 20,
     windowSeconds: HOUR,
   }),
 };

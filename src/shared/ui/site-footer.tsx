@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { CookiePreferencesButton } from "@/cookie-consent/presentation/cookie-preferences-button";
 import { podcastChannels } from "@/podcast/podcast-channels";
 import { ExternalLink } from "./external-link";
 import { KickIcon, SpotifyIcon, YouTubeIcon } from "./icons";
@@ -32,7 +34,13 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
-          <p className="text-ink-500">Proyecto comunitario de código abierto · Licencia MIT</p>
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-500">
+            <span>Proyecto comunitario de código abierto · Licencia MIT</span>
+            <Link href="/cookies" className="underline-offset-4 hover:text-paper hover:underline">
+              Cookies
+            </Link>
+            <CookiePreferencesButton className="underline-offset-4 hover:text-paper hover:underline" />
+          </p>
         </div>
         <ExternalLink
           href="https://github.com/GatoArtStudio/non-soma-community"

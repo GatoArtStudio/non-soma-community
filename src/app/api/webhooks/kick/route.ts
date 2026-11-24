@@ -21,15 +21,18 @@ export async function POST(request: NextRequest) {
         eventVersion: header("kick-event-version"),
       },
     });
-    console.info(
-      "[kick-webhook]",
-      JSON.stringify({
-        event: header("kick-event-type"),
-        version: header("kick-event-version"),
-        messageId: header("kick-event-message-id"),
-        ...outcome,
-      }),
-    );
+    // Regular chat messages are the bulk of the traffic, so they are not logged.
+    const isRoutineMessage = outcome.status === "ignored" && outcome.reason === "no_badge";
+    if (!isRoutineMessage)
+      console.info(
+        "[kick-webhook]",
+        JSON.stringify({
+          event: header("kick-event-type"),
+          version: header("kick-event-version"),
+          messageId: header("kick-event-message-id"),
+          ...outcome,
+        }),
+      );
     if (outcome.status === "rejected") {
       return NextResponse.json(
         { error: outcome.reason },

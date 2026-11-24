@@ -14,7 +14,6 @@ export interface ToggleLikeInput {
   liker: Liker;
   verificationToken: string;
   remoteIp: string | null;
-  networkHash: string;
 }
 
 export interface ToggleLikeResult {
@@ -32,7 +31,7 @@ export function createToggleLike(deps: {
       action: "like_book",
       verificationToken: input.verificationToken,
       remoteIp: input.remoteIp,
-      rateLimits: [rateLimitPolicies.likesPerNetwork(input.networkHash)],
+      rateLimits: [rateLimitPolicies.likes(likerKey(input.liker))],
     });
 
     const book = await deps.books.findById(input.bookId);

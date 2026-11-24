@@ -22,9 +22,15 @@ Kick OAuth. Released under the [MIT License](./LICENSE).
 - **Team management**: the channel owner grants and revokes moderators.
 - **Anti-bot protection** on every proposal and like:
   - Cloudflare Turnstile
-  - MySQL-backed rate limits
+  - rate limits per Kick account or per device cookie, stored in MySQL
   - a honeypot field
-  - one like per Kick account, and per anonymous browser and network
+  - one like per Kick account, or per device for anonymous visitors. IPs never identify
+    people: mobile carriers put many viewers behind the same address.
+- **Per-IP request ceilings** in the Next.js proxy, kept in memory. They are generous and only
+  active when the real client IP is known (`TRUST_CLOUDFLARE=true`).
+- **Cookie consent**: the site can be browsed without accepting cookies. Voting and proposing
+  require consent, because they rely on the device cookie. The YouTube and Spotify players load
+  only after consent or an explicit click. `/cookies` lists every cookie.
 
 ## How moderator access works
 
@@ -51,7 +57,8 @@ src/
   authentication/   Kick OAuth 2.1 + PKCE login, database sessions
   moderators/       roles (owner/moderator/member), team management
   books/            proposals, catalog browsing, Open Library adapter
-  book-likes/       likes with per-account / per-visitor / per-network uniqueness
+  book-likes/       likes, unique per Kick account or per device
+  cookie-consent/   consent banner, consent checks and third-party embed gating
   moderation/       approve/reject/delete/mark read, audit log
   readings/         current stream reading and chapter tracking
   kick-events/      signed Kick webhooks (moderator badge detection)
@@ -146,25 +153,30 @@ the app through the Docker network.
 
 ### Cloudflare recommendations
 
-- Set `TRUST_CLOUDFLARE=true` only when the origin is reachable exclusively through Cloudflare.
-  The app then reads the client IP from `CF-Connecting-IP`.
+- Set `TRUST_CLOUDFLARE=true` when the origin is reachable exclusively through Cloudflare, for
+  example through the server's tunnel. The app then reads the client IP from `CF-Connecting-IP`
+  and turns on its per-IP request ceilings. Without it the app cannot tell visitors apart, so the
+  ceilings stay off.
 - Set `TURNSTILE_EXPECTED_HOSTNAME` to your domain in production. With it set, tokens must
   match both the hostname and the action.
-- Suggested WAF rate-limit rules on top of the app limits:
+- Cloudflare rate limiting is the first line of defense. Suggested WAF rate-limit rules:
   - `POST` on `/proponer` and `/libros/*`
   - `GET` on `/api/books/search` and `/api/auth/kick/login`
 - Enable "Always Use HTTPS". Session cookies use the `__Host-` prefix when `APP_URL` is HTTPS.
 
 ## Security notes
 
-- Raw IP addresses and visitor ids are never stored. Only HMAC hashes keyed with `APP_SECRET`
-  are kept.
+- Raw IP addresses are never stored; they are only forwarded to Turnstile and used in memory for
+  request ceilings. Device ids are stored as HMAC hashes keyed with `APP_SECRET`.
 - Sessions are random tokens. Only their SHA-256 hash is stored in MySQL.
 - Kick webhooks are checked in four ways:
   - their RSA-SHA256 signature is verified against Kick's public key;
-  - deliveries older than 10 minutes are rejected;
-  - repeated message ids are ignored;
-  - events for other channels are ignored.
+  - deliveries older than 1 hour are rejected;
+  - events for other channels are ignored;
+  - repeated message ids are ignored.
+
+  Chat messages without a moderator badge are filtered in memory and never touch the database.
+
 - Every use case checks the actor's role, so the panel UI is not the only guard.
 
 ## Contributing

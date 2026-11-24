@@ -1,3 +1,4 @@
+import { ConsentEmbed } from "@/cookie-consent/presentation/consent-embed";
 import { podcastChannels } from "@/podcast/podcast-channels";
 import { ExternalLink } from "@/shared/ui/external-link";
 import { SpotifyIcon, YouTubeIcon } from "@/shared/ui/icons";
@@ -28,15 +29,17 @@ export function PodcastSection() {
             </ExternalLink>
           </div>
           <div className="aspect-video overflow-hidden rounded-2xl bg-ink-900 ring-1 ring-ink-800 lg:aspect-auto lg:h-[352px]">
-            <iframe
-              src={podcastChannels.youtube.embedUrl}
-              title="Playlist de Non Soma en YouTube"
-              loading="lazy"
-              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-              className="size-full"
-            />
+            <ConsentEmbed provider="YouTube" url={podcastChannels.youtube.url}>
+              <iframe
+                src={podcastChannels.youtube.embedUrl}
+                title="Playlist de Non Soma en YouTube"
+                loading="lazy"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                className="size-full"
+              />
+            </ConsentEmbed>
           </div>
         </article>
         <article className="flex flex-col gap-3">
@@ -54,13 +57,15 @@ export function PodcastSection() {
           </div>
           {/* Spotify's full player layout (with the episode list) needs exactly 352px of height. */}
           <div className="h-[352px] overflow-hidden rounded-2xl bg-ink-900 ring-1 ring-ink-800">
-            <iframe
-              src={podcastChannels.spotify.embedUrl}
-              title="Podcast Non Soma en Spotify"
-              loading="lazy"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              className="size-full"
-            />
+            <ConsentEmbed provider="Spotify" url={podcastChannels.spotify.url}>
+              <iframe
+                src={podcastChannels.spotify.embedUrl}
+                title="Podcast Non Soma en Spotify"
+                loading="lazy"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                className="size-full"
+              />
+            </ConsentEmbed>
           </div>
         </article>
       </div>

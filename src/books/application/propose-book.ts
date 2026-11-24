@@ -6,14 +6,16 @@ import { isValidWorkKey, type Book } from "@/books/domain/book";
 import type { BookRepository } from "@/books/domain/book.repository";
 import { canModerate, type Role } from "@/moderators/domain/role";
 
-export type ProposeBookErrorCode = "invalid_work_key" | "book_not_found_in_catalog";
+export type ProposeBookErrorCode =
+  "invalid_work_key" | "book_not_found_in_catalog" | "cookie_consent_required";
 
 export interface ProposeBookInput {
   workKey: string;
   proposer: { userId: number; role: Role } | null;
   verificationToken: string;
+  /** Device id for anonymous proposers; only available after the visitor accepted cookies. */
+  visitorHash: string | null;
   remoteIp: string | null;
-  networkHash: string;
 }
 
 export type ProposeBookResult =
@@ -31,13 +33,17 @@ export function createProposeBook(deps: {
       throw new DomainError<ProposeBookErrorCode>("invalid_work_key");
     }
 
+    if (!input.proposer && !input.visitorHash) {
+      throw new DomainError<ProposeBookErrorCode>("cookie_consent_required");
+    }
+
     await deps.guardHumanAction({
       action: "propose_book",
       verificationToken: input.verificationToken,
       remoteIp: input.remoteIp,
       rateLimits: input.proposer
         ? [rateLimitPolicies.userProposals(input.proposer.userId)]
-        : [rateLimitPolicies.anonymousProposalsPerNetwork(input.networkHash)],
+        : [rateLimitPolicies.anonymousProposals(input.visitorHash ?? "")],
     });
 
     const existing = await deps.books.findByWorkKey(input.workKey);

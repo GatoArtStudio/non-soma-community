@@ -11,7 +11,7 @@ export async function findLikedBookIds(viewer: Viewer, bookIds: number[]): Promi
     liker = { kind: "user", userId: viewer.user.id };
   } else {
     const visitorHash = await readVisitorHash();
-    if (visitorHash) liker = { kind: "anonymous", visitorHash, networkHash: "" };
+    if (visitorHash) liker = { kind: "anonymous", visitorHash };
   }
   return getToggleLike().findLikedBookIds(liker, bookIds);
 }
