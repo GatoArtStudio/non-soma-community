@@ -40,7 +40,7 @@ export function SiteFooter() {
           <p>Proyecto comunitario de código abierto · Licencia MIT</p>
         </div>
         <a
-          href="https://github.com/GatoArtStudio"
+          href="https://github.com/GatoArtStudio/non-soma-community"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center gap-2.5 self-start text-ink-400 transition-colors hover:text-paper sm:self-auto"
@@ -52,9 +52,7 @@ export function SiteFooter() {
             height={32}
             className="size-8 rounded-md ring-1 ring-ink-800 transition group-hover:ring-ink-600"
           />
-          <span>
-            Desarrollado por <span className="text-ink-200">GatoArtStudio</span>
-          </span>
+          <span className="text-ink-200">Contribuir al proyecto</span>
         </a>
       </div>
     </footer>
