@@ -1,0 +1,9 @@
+export { usersTable } from "@/authentication/infrastructure/users.table";
+export { sessionsTable } from "@/authentication/infrastructure/sessions.table";
+export { moderatorsTable } from "@/moderators/infrastructure/moderators.table";
+export { booksTable } from "@/books/infrastructure/books.table";
+export { bookLikesTable } from "@/book-likes/infrastructure/book-likes.table";
+export { readingsTable } from "@/readings/infrastructure/readings.table";
+export { moderationActionsTable } from "@/moderation/infrastructure/moderation-actions.table";
+export { rateLimitBucketsTable } from "@/bot-protection/infrastructure/rate-limit-buckets.table";
+export { processedWebhookMessagesTable } from "@/kick-events/infrastructure/processed-webhook-messages.table";
