@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { UserMenu } from "@/authentication/presentation/user-menu";
-import { LogoMark } from "./logo";
 import { NavLink, StaticNavLink } from "./nav-link";
 
 const NAVIGATION = [
@@ -16,13 +15,9 @@ export function SiteHeader() {
         <div className="flex min-w-0 items-center gap-3 sm:gap-6">
           <Link
             href="/"
-            aria-label="Non Soma Community, inicio"
-            className="flex items-center gap-2.5"
+            className="flex min-h-11 shrink-0 items-center whitespace-nowrap font-serif text-lg leading-none tracking-tight"
           >
-            <LogoMark />
-            <span className="hidden font-serif text-lg leading-none tracking-tight min-[400px]:inline">
-              Non Soma <span className="hidden text-ink-400 sm:inline">Community</span>
-            </span>
+            Non Soma<span className="hidden text-ink-400 sm:inline">&nbsp;Community</span>
           </Link>
           <nav aria-label="Principal" className="flex items-center gap-0.5 sm:gap-1">
             <Suspense
