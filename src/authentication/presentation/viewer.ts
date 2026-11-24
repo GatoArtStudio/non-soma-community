@@ -1,4 +1,5 @@
 import "server-only";
+import { connection } from "next/server";
 import { cache } from "react";
 import type { SessionUser } from "@/authentication/domain/session-user";
 import { getSessionAccess } from "@/authentication/container";
@@ -15,6 +16,8 @@ export interface Viewer {
 /** Current request's user and role. Deduplicated per request; reads cookies, so call inside Suspense. */
 export const getViewer = cache(async (): Promise<Viewer> => {
   const sessionToken = await readSessionToken();
+  // Session validity depends on the current time, so it must not run during (runtime) prerendering.
+  await connection();
   const user = await getSessionAccess().getSessionUser(sessionToken);
   if (!user) return { user: null, role: "member" };
   return { user, role: await getResolveRole()(user.kickUserId) };

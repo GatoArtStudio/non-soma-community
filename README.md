@@ -107,10 +107,11 @@ In the Kick developer settings:
 1. **Redirect URI**: `${APP_URL}/api/auth/kick/callback`
 2. **Scopes**: the app only requests `user:read`. The Kick access token is revoked right after
    login, and only the identity is kept.
-3. **Webhooks**: enable them and set the URL to `${APP_URL}/api/webhooks/kick`. Then, signed in as
-   the channel owner, open **Panel → Equipo** and press **Activar detección**. That subscribes
-   the app to `chat.message.sent` for the channel, using an app access token. Kick disables
-   subscriptions whose webhook keeps failing; the same button re-creates them.
+3. **Webhooks**: enable them and set the URL to `${APP_URL}/api/webhooks/kick`. On startup, and
+   every 6 hours, the app subscribes itself to `chat.message.sent` for the channel using an app
+   access token. It logs the result as `[kick-subscription]`. This also re-creates the
+   subscription if Kick dropped it after webhook failures. The owner can trigger the same check
+   from **Panel → Equipo**. Every delivery is logged as `[kick-webhook]` with its outcome.
 
 Webhooks need a public HTTPS URL. For local testing use a Cloudflare Tunnel.
 
@@ -137,10 +138,11 @@ The stack has these services:
 
 - **`db`**: MySQL with a persistent volume, only on an internal network.
 - **`migrate`**: applies Drizzle migrations, then exits.
-- **`app`**: the Next.js standalone server, bound to `127.0.0.1:${APP_PORT:-3000}`.
+- **`app`**: the Next.js standalone server, listening on port `3000` inside the Docker network.
+  No port is published on the host.
 
-The compose file does not run Cloudflare itself. The server's existing Cloudflare Tunnel should
-route the public hostname to `http://localhost:${APP_PORT:-3000}`.
+The compose file does not run Cloudflare itself. The server's existing Cloudflare Tunnel reaches
+the app through the Docker network.
 
 ### Cloudflare recommendations
 

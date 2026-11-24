@@ -83,7 +83,7 @@ export function ProposeBookForm({ turnstileSiteKey }: { turnstileSiteKey: string
           placeholder="Ej. Cien años de soledad"
           autoComplete="off"
           maxLength={100}
-          className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-base text-paper placeholder:text-ink-500 focus:border-ink-400 focus:outline-none"
+          className="w-full rounded-xl border border-ink-700 bg-ink-900 px-4 py-3 text-base text-paper placeholder:text-ink-500 focus:border-ink-400"
         />
         <p className="text-xs text-ink-500">
           Los datos vienen de Open Library, así evitamos duplicados y errores de escritura.
@@ -99,6 +99,7 @@ export function ProposeBookForm({ turnstileSiteKey }: { turnstileSiteKey: string
       {selected && (
         <form
           action={formAction}
+          aria-label={`Proponer ${selected.title}`}
           className="flex flex-col gap-5 rounded-2xl border border-ink-700 bg-ink-900 p-5"
         >
           <div className="flex gap-4">
@@ -108,8 +109,7 @@ export function ProposeBookForm({ turnstileSiteKey }: { turnstileSiteKey: string
               className="w-20 shrink-0"
             />
             <div className="flex flex-col gap-1">
-              <p className="text-xs uppercase tracking-widest text-ink-500">Vas a proponer</p>
-              <p className="font-serif text-xl text-paper">{selected.title}</p>
+              <h2 className="font-serif text-xl text-paper">{selected.title}</h2>
               <p className="text-sm text-ink-400">
                 {formatAuthors(selected.authors)}
                 {selected.firstPublishYear ? ` · ${selected.firstPublishYear}` : ""}

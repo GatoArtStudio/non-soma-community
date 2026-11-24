@@ -39,8 +39,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        <a
+          href="#contenido"
+          className="sr-only z-50 rounded-full bg-paper px-4 py-2 text-sm font-medium text-ink-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-3"
+        >
+          Saltar al contenido
+        </a>
         <SiteHeader />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">{children}</main>
+        <main
+          id="contenido"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 focus:outline-none sm:px-6"
+        >
+          {children}
+        </main>
         <SiteFooter />
       </body>
     </html>

@@ -47,11 +47,16 @@ function chatMessage(badges: { type: string }[], broadcasterId = BROADCASTER_ID)
 
 function setup() {
   const processed = new Set<string>();
-  const grant = vi.fn(async () => "granted" as const);
+  const grant = vi.fn<(input: { kickUserId: number; username: string }) => Promise<"granted">>(
+    async () => "granted",
+  );
   const handle = createHandleKickWebhook({
     verifier: { verify: async (delivery) => verifyKickSignature(publicKey, delivery) },
     processedMessages: {
-      markProcessed: async (id) => (processed.has(id) ? false : (processed.add(id), true)),
+      wasProcessed: async (id) => processed.has(id),
+      markProcessed: async (id) => {
+        processed.add(id);
+      },
     },
     channel: new FakeChannelDirectory(),
     grantModeratorFromChatBadge: grant,
@@ -66,7 +71,11 @@ describe("handleKickWebhook", () => {
 
     const outcome = await handle(signedDelivery(chatMessage([{ type: "moderator" }])));
 
-    expect(outcome).toEqual({ status: "processed", moderator: "granted" });
+    expect(outcome).toEqual({
+      status: "processed",
+      moderator: "granted",
+      senderUsername: "moderadora",
+    });
     expect(grant).toHaveBeenCalledWith({ kickUserId: 77, username: "moderadora" });
   });
 
@@ -82,7 +91,7 @@ describe("handleKickWebhook", () => {
   it("rejects stale deliveries", async () => {
     const { handle } = setup();
     const delivery = signedDelivery(chatMessage([{ type: "moderator" }]), {
-      timestamp: new Date(NOW - 60 * 60 * 1000).toISOString(),
+      timestamp: new Date(NOW - 2 * 60 * 60 * 1000).toISOString(),
     });
 
     expect(await handle(delivery)).toEqual({ status: "rejected", reason: "stale" });
@@ -101,5 +110,37 @@ describe("handleKickWebhook", () => {
       await handle(signedDelivery(chatMessage([{ type: "subscriber" }]), { messageId: "3" })),
     ).toMatchObject({ reason: "no_badge" });
     expect(grant).toHaveBeenCalledTimes(1);
+  });
+
+  it("tolerates other event versions, null fields and badge casing", async () => {
+    const { handle, grant } = setup();
+    const payload = chatMessage([{ type: "Moderator" }]);
+    const sender = payload.sender as Record<string, unknown>;
+    sender.is_anonymous = null;
+    (sender.identity as { badges: unknown[] }).badges.push({ type: null, text: "x" });
+
+    const outcome = await handle(signedDelivery(payload, { eventVersion: "2", messageId: "4" }));
+
+    expect(outcome).toMatchObject({ status: "processed" });
+    expect(grant).toHaveBeenCalledOnce();
+  });
+
+  it("processes Kick's retry when the first attempt failed", async () => {
+    const { handle, grant } = setup();
+    const delivery = signedDelivery(chatMessage([{ type: "moderator" }]), { messageId: "5" });
+    grant.mockRejectedValueOnce(new Error("database down"));
+
+    await expect(handle(delivery)).rejects.toThrow("database down");
+    expect(await handle(delivery)).toMatchObject({ status: "processed" });
+  });
+
+  it("accepts deliveries retried within the hour", async () => {
+    const { handle } = setup();
+    const delivery = signedDelivery(chatMessage([{ type: "moderator" }]), {
+      messageId: "6",
+      timestamp: new Date(NOW - 30 * 60 * 1000).toISOString(),
+    });
+
+    expect(await handle(delivery)).toMatchObject({ status: "processed" });
   });
 });

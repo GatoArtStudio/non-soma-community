@@ -1,8 +1,8 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { getViewer } from "@/authentication/presentation/viewer";
 import { KickLoginLink } from "@/authentication/presentation/user-menu";
 import { canManageTeam, canModerate } from "@/moderators/domain/role";
+import { NavLink } from "@/shared/ui/nav-link";
 
 const LINKS = [
   { href: "/panel", label: "Pendientes" },
@@ -53,13 +53,9 @@ export async function PanelShell({ children }: { children: ReactNode }) {
             ...LINKS,
             ...(canManageTeam(role) ? [{ href: "/panel/equipo", label: "Equipo" }] : []),
           ].map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-full border border-ink-700 px-3 py-1 text-sm text-ink-300 transition-colors hover:border-ink-500 hover:text-paper"
-            >
+            <NavLink key={link.href} href={link.href} exact={link.href === "/panel"}>
               {link.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
       </header>

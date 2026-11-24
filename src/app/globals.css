@@ -8,13 +8,14 @@
   --ink-800: #181818;
   --ink-700: #262626;
   --ink-600: #3a3a3a;
-  --ink-500: #5c5c5c;
-  --ink-400: #8a8a8a;
+  --ink-500: #7c7c7c;
+  --ink-400: #9a9a9a;
   --ink-300: #b4b4b4;
   --ink-200: #d6d6d6;
   --paper: #f4f1ea;
   --danger: #e5484d;
   --success: #46a758;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @theme inline {
@@ -34,10 +35,12 @@
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-newsreader);
   --font-mono: var(--font-geist-mono);
+  --ease-out: var(--ease-out);
 }
 
 html {
   background: var(--ink-950);
+  scrollbar-color: var(--ink-600) var(--ink-950);
 }
 
 body {
@@ -45,6 +48,7 @@ body {
   color: var(--paper);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  caret-color: var(--paper);
 }
 
 ::selection {
@@ -57,11 +61,13 @@ body {
   outline-offset: 3px;
 }
 
+/* Reduced motion removes movement but keeps color and opacity feedback. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    translate: none !important;
+    scale: none !important;
   }
 }

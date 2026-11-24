@@ -8,7 +8,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https://covers.openlibrary.org https://*.kick.com",
   "font-src 'self'",
   "connect-src 'self' https://challenges.cloudflare.com",
-  "frame-src https://challenges.cloudflare.com",
+  "frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://open.spotify.com",
   "frame-ancestors 'none'",
   "form-action 'self' https://id.kick.com",
   "base-uri 'self'",

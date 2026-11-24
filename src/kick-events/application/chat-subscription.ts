@@ -22,9 +22,11 @@ export function createChatSubscription(deps: {
     return isSubscribed();
   }
 
-  /** Kick drops subscriptions whose webhook keeps failing, so the owner can re-create it. */
-  async function ensureChatSubscription(actor: Actor): Promise<"created" | "already_subscribed"> {
-    assertCanManageTeam(actor);
+  /**
+   * Creates the subscription when missing. Kick drops subscriptions whose webhook keeps failing,
+   * so this runs on startup and periodically, besides the owner's manual button.
+   */
+  async function ensureChannelSubscription(): Promise<"created" | "already_subscribed"> {
     if (await isSubscribed()) return "already_subscribed";
     await deps.subscriptions.subscribe(await deps.channel.getBroadcasterUserId(), [
       CHAT_MESSAGE_EVENT,
@@ -32,5 +34,10 @@ export function createChatSubscription(deps: {
     return "created";
   }
 
-  return { getChatSubscriptionStatus, ensureChatSubscription };
+  async function ensureChatSubscription(actor: Actor): Promise<"created" | "already_subscribed"> {
+    assertCanManageTeam(actor);
+    return ensureChannelSubscription();
+  }
+
+  return { getChatSubscriptionStatus, ensureChatSubscription, ensureChannelSubscription };
 }

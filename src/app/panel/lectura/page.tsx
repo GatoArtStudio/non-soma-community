@@ -48,10 +48,9 @@ async function CurrentReadingManager() {
       />
       <div className="flex flex-1 flex-col gap-6">
         <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-ink-500">Leyendo ahora</p>
-          <h2 className="mt-2 font-serif text-3xl">{reading.book.title}</h2>
+          <h2 className="font-serif text-3xl">{reading.book.title}</h2>
           <p className="text-ink-400">
-            {formatAuthors(reading.book.authors)} · desde {formatDate(reading.startedAt)}
+            {formatAuthors(reading.book.authors)} · en lectura desde {formatDate(reading.startedAt)}
           </p>
         </div>
         <ChapterForm currentChapter={reading.currentChapter} />

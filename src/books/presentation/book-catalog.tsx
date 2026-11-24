@@ -5,6 +5,7 @@ import { BOOKS_PAGE_SIZE } from "@/books/application/browse-books";
 import { getBrowseBooks } from "@/books/container";
 import { getPublicConfig } from "@/shared/config/public-config";
 import { buttonClasses } from "@/shared/ui/button";
+import { SearchIcon } from "@/shared/ui/icons";
 import { cn } from "@/shared/ui/cn";
 import { BookGrid } from "./book-grid";
 import {
@@ -31,16 +32,20 @@ export async function BookCatalog({ searchParams }: { searchParams: Promise<Sear
         <form action="/libros" className="flex gap-2" role="search">
           {query.filter !== "all" && <input type="hidden" name="filtro" value={query.filter} />}
           {query.sort !== "most_liked" && <input type="hidden" name="orden" value={query.sort} />}
+          <label htmlFor="catalog-search" className="sr-only">
+            Buscar libros por título o autor
+          </label>
           <input
+            id="catalog-search"
             type="search"
             name="q"
             defaultValue={query.search}
             maxLength={100}
             placeholder="Buscar por título o autor"
-            aria-label="Buscar libros"
-            className="w-full max-w-md rounded-full border border-ink-700 bg-ink-900 px-4 py-2 text-sm placeholder:text-ink-500 focus:border-ink-400 focus:outline-none"
+            className="w-full max-w-md rounded-full border border-ink-700 bg-ink-900 px-4 py-2 text-sm placeholder:text-ink-500 focus:border-ink-400"
           />
           <button type="submit" className={buttonClasses("secondary")}>
+            <SearchIcon className="size-4" />
             Buscar
           </button>
         </form>
